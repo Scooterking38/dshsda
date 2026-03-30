@@ -1,13 +1,12 @@
-name: Dominion AI CI
+name: Dominion AI Training and Battle
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
-  train:
+  build-and-battle:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +18,18 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install gymnasium numpy torch stable-baselines3 shimmy
 
-    - name: Run Training
+    - name: Train and Run Tournament
       run: |
-        python main.py
-
-    - name: Upload Model
+        # This will execute the main block: train then play 3 games
+        python dominion_env.py
+      
+    - name: Archive Model
       uses: actions/upload-artifact@v4
       with:
-        name: dominion-model
-        path: dominion_selfplay_ai.zip
+        name: dominion-ai-model
+        path: dominion_model.zip
